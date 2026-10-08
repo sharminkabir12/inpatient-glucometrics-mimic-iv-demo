@@ -1,0 +1,31 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# Jupyter temporary files
+.ipynb_checkpoints/
+
+# Local datasets (do not commit MIMIC/PhysioNet data)
+data/
+datasets/
+mimic/
+mimic-iv/
+physionet/
+*.csv
+*.csv.gz
+*.parquet
+*.pkl
+*.pickle
+
+# Generated figures (uncomment if you do not want to track plots)
+# figures/
+
+# Local environment / secrets
+.env
+.venv/
+venv/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
