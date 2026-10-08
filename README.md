@@ -1,61 +1,63 @@
-# Inpatient Glucometrics: A Practice Analysis on the MIMIC-IV Demo
+# Inpatient Glucose Patterns and Length of Stay
 
-A small exploratory project to learn how routinely collected hospital data can be used to measure adverse glycaemia (blood sugar that is too low or too high) in hospital inpatients.
+**An exploratory Python and machine-learning learning project using MIMIC-IV Demo v2.2.**
 
-**Author:** Sharmin Kabir (MBBS, MSc Diabetes)
-**Status:** Learning project. It is not a research finding and must not be used for clinical decisions.
+## Research question
 
-## Why I did this
+Can glucose measurements recorded in the **first 48 hours** of admission help explore hospital stays lasting **more than seven days** among admissions with recorded diabetes diagnosis codes?
 
-Glucometrics is the standard way of analysing inpatient glucose data. I built this project to practise working with real electronic patient record data in Python, and to understand how glucose measures can be linked to hospital outcomes.
+## Data and methods
 
-## Data
+- Publicly available [MIMIC-IV Demo v2.2](https://physionet.org/content/mimic-iv-demo/2.2/) hospital data.
+- Identify admissions with diabetes diagnosis codes (ICD-9 `250`; ICD-10 `E08`, `E09`, `E10`, `E11`, `E13`).
+- Select blood glucose laboratory readings in mg/dL, remove missing or invalid readings, and use only measurements taken in the first 48 hours.
+- Include stays lasting at least 48 hours with at least three eligible glucose readings.
+- Calculate glucose summaries per admission, including mean, variability, minimum, maximum, and percentages below 70 mg/dL, above 180 mg/dL, and between 70–180 mg/dL.
+- Compare a prevalence baseline, logistic regression, and random forest using **patient-grouped** five-fold cross-validation. Both outcome classes are checked in training and test folds before AUROC is calculated.
 
-- **MIMIC-IV Clinical Database Demo, version 2.2** (open access, 100 patients, Beth Israel Deaconess Medical Center, USA).
-- Johnson A, Bulgarelli L, Pollard T, Horng S, Celi LA, Mark R. PhysioNet, 2023. https://doi.org/10.13026/dp1f-ex47
-- Tables used: `labevents`, `d_labitems`, `admissions`.
-- Data are not included in this repository. The notebook downloads them from PhysioNet.
+## Results from the executed Colab notebook
 
-## Methods
+| Measure | Result |
+|---|---:|
+| Hospital admissions in the demo | 275 |
+| Admissions with a recorded diabetes diagnosis code | 112 |
+| Admissions with at least one valid glucose reading | 103 |
+| Diabetes admissions still in hospital at 48 hours, with glucose readings | 89 |
+| Final admissions with at least three readings in the first 48 hours | **48** |
+| Distinct patients in the final cohort | **27** |
+| Admissions with stay >7 days | 27 |
+| Admissions with stay ≤7 days | 21 |
 
-1. Selected blood glucose results from the laboratory table (2,538 readings kept after removing missing and impossible values, 10 to 1500 mg/dL).
-2. Labelled each reading as **low** (< 70 mg/dL, about 3.9 mmol/L) or **high** (> 180 mg/dL, about 10 mmol/L).
-3. For each hospital stay, calculated the number of readings, mean glucose, and the percentage of readings that were low and high. Kept stays with at least 3 readings.
-4. Calculated length of stay from admission and discharge times.
-5. Compared length of stay with glucose measures using medians, Spearman correlation and plots.
+### Exploratory model results
 
-## Results
+| Model | Mean cross-validation AUROC |
+|---|---:|
+| Baseline (class prevalence) | 0.500 |
+| Logistic regression | 0.333 |
+| Random forest | 0.572 |
 
-- **199** hospital stays had at least 3 glucose readings.
-- **32** of these (16%) had at least one low reading.
-- Median length of stay was **5.9 days** without a low reading and **10.3 days** with one.
-- Spearman correlation with length of stay: percentage of high readings **0.05**, percentage of low readings **0.17**.
-
-![Figure](glucometrics_figure.png)
-
-**In simple terms:** stays with a low glucose reading were longer on the whole, but the two groups overlapped a lot, and the percentage of high readings was not clearly linked to length of stay.
-
-## Limitations
-
-- Very small sample (100 patients), so results are unreliable and no statistical conclusions can be drawn.
-- **Longer stays produce more glucose readings, so they have more chances to include a low value.** The link between low readings and length of stay may partly reflect this rather than a real effect.
-- Sicker patients are tested more often and stay longer (confounding). No adjustment was made.
-- Laboratory glucose was used. Bedside finger-prick (point-of-care) glucose, which is common in hospital diabetes care, was not analysed.
-- Patients were not filtered for diabetes.
-- The data come from a single US hospital and may differ from NHS settings.
-
-## Next steps I would like to take
-
-- Work with the full MIMIC-IV dataset (credentialed access) and include bedside glucose.
-- Restrict to patients with diabetes and adjust for age, illness severity and number of readings.
-- Standard glucometrics measures per patient-day, such as hypoglycaemia and hyperglycaemia rates.
-- Build and validate a simple prediction model for adverse outcomes.
+All five grouped folds contained both outcome classes in their training and test subsets in this run. These values are **exploratory only**: the small, selected demo cohort cannot establish reliable predictive performance, and the apparent differences between models should not be interpreted as clinical evidence.
 
 ## How to run
 
-1. Open `inpatient-glucometrics-mimic-demo.ipynb` in Google Colab.
-2. Run the cells from top to bottom. The first cell downloads the data.
+1. Open `inpatient-glucometrics.ipynb` in Google Colab.
+2. Choose **Runtime → Run all**. The notebook downloads the public demo files automatically.
+3. Review the cohort flow, plots and model output. Figures are written to `figures/`.
 
-## Note on tools
+For local use, install packages with `pip install -r requirements.txt` and run the notebook in Jupyter.
 
-The code was written with the help of an AI assistant (Claude). I ran the analysis myself, checked the results and wrote the interpretation.
+## Limitations
+
+- Small demo cohort; not representative of clinical populations and not suitable for clinical deployment.
+- Diabetes is identified through recorded diagnosis codes, which may miss cases.
+- Uses laboratory glucose readings, not all bedside point-of-care measurements.
+- Does not adjust for illness severity, treatment, comorbidities or hospital context.
+- Length of stay is associated with many factors; this analysis does **not** establish causality.
+- Patient-grouped cross-validation reduces overlap between training and test patients but does not replace external validation.
+
+## Reproducibility and data
+
+The notebook contains the full workflow and saves plots locally. Do not commit downloaded patient-level datasets or other restricted MIMIC data to GitHub. The open demo can be downloaded from PhysioNet by running the notebook.
+
+**Status:** Executed in Google Colab with outputs saved in the included notebook. Not independently re-run in this package-building step.
+
