@@ -73,6 +73,8 @@ Figures are produced by the notebook and saved to `figures/`:
 - **No external validation.** Cross-validation uses a single small dataset from one US hospital, which may differ from NHS settings.
 - **Mortality was not modelled** because there are too few in-hospital deaths in the demo.
 - **Associations are not causal.**
+- Age was represented using `anchor_age` rather than estimated age at admission. This will be corrected in the next version.
+-Diabetes status was identified retrospectively using diagnosis codes from the hospital admission.
 
 ## Possible next steps
 
