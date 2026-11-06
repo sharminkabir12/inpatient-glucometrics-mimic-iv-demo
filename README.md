@@ -54,7 +54,7 @@ The final analysis set contains **48 admissions from 27 patients**: 27 long stay
 
 Each held-out fold contained 9 to 10 admissions from 5 to 6 patients, with 4 to 7 long stays.
 
-Neither model reliably outperformed the baseline. Logistic regression scored below chance in every fold. The random forest ranged from 0.32 to 0.79 across folds, which shows how unstable results are with so few admissions. No conclusion about predictive ability can be drawn. I report this as a finding in its own right: the demo dataset is too small to support a prediction model of this kind.
+Neither model reliably outperformed the baseline. Logistic regression performed below chance on average, while the random forest showed considerable variation between folds. The random forest ranged from 0.32 to 0.79 across folds, which shows how unstable results are with so few admissions. No conclusion about predictive ability can be drawn. I report this as a finding in its own right: the demo dataset is too small to support a prediction model of this kind.
 
 ## Version history
 
